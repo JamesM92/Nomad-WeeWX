@@ -1,0 +1,3 @@
+numpy
+uniplot
+git+https://github.com/JamesM92/Ansi2MicronMU.git

@@ -1,0 +1,56 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          shellcheck --severity=warning \
+            installer/install_weewx.sh \
+            installer/manage_weewx.sh \
+            installer/scan_sdr.sh
+
+  python-syntax:
+    name: Python Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check Python syntax
+        run: |
+          # Check .py files
+          python3 -m py_compile templates/weewx.py
+
+          # Check .mu files (Python executables with .mu extension)
+          for f in templates/nomadpages/weewx/*.mu; do
+            python3 -m py_compile "$f" && echo "OK: $f" || exit 1
+          done
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint Python files
+        run: |
+          ruff check templates/weewx.py
+          # Lint .mu files by treating them as Python
+          for f in templates/nomadpages/weewx/*.mu; do
+            ruff check --stdin-filename "${f%.mu}.py" < "$f" || exit 1
+          done

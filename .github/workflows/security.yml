@@ -1,0 +1,73 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Monday at 08:00 UTC
+    - cron: "0 8 * * 1"
+
+jobs:
+  dependency-audit:
+    name: Dependency Audit (pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Audit dependencies
+        run: |
+          # Exclude git+ URLs — pip-audit can't resolve them; audit only PyPI packages
+          grep -v '^git+' templates/nomadpages/weewx/requirements.txt > /tmp/pypi-reqs.txt
+          pip-audit -r /tmp/pypi-reqs.txt
+
+  bandit:
+    name: Python Security (Bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run Bandit on Python files
+        run: |
+          bandit -r templates/weewx.py
+
+      - name: Run Bandit on NomadNet page scripts
+        run: |
+          for f in templates/nomadpages/weewx/*.mu; do
+            echo "=== $f ==="
+            bandit "$f" || exit 1
+          done
+
+  shellcheck-security:
+    name: Shell Security (ShellCheck strict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck (strict)
+        run: |
+          shellcheck --severity=error \
+            --enable=avoid-nullary-conditions,deprecate-which \
+            installer/install_weewx.sh \
+            installer/manage_weewx.sh \
+            installer/scan_sdr.sh

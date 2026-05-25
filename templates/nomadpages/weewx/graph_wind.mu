@@ -13,7 +13,7 @@ data_points = ['dateTime', 'windSpeed', 'rain']
 try:
     conn = sqlite3.connect(database)
     cur = conn.cursor()
-    cur.execute(f'SELECT {", ".join(data_points)} FROM archive ORDER BY dateTime DESC LIMIT 288')
+    cur.execute(f'SELECT {", ".join(data_points)} FROM archive ORDER BY dateTime DESC LIMIT 288')  # nosec B608
     data = cur.fetchall()
     conn.close()
 except Exception:

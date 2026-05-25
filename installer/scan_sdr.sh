@@ -24,7 +24,6 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 WEEWX_CONF_DEST="/etc/weewx/weewx.conf"
 SCAN_DURATION=90

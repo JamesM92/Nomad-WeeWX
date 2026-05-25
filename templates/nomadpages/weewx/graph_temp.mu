@@ -16,7 +16,7 @@ try:
     cur.execute(f'SELECT {", ".join(data_points)} FROM archive ORDER BY dateTime DESC LIMIT 288')
     data = cur.fetchall()
     conn.close()
-except:
+except Exception:
     data = []
 
 # Filter out rows with missing timestamps

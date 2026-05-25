@@ -143,7 +143,7 @@ try:
         ld = float(ld)
         if 0 < ld < LIGHTNING_ALERT_DISTANCE:
             lightning_nearby = True
-except:
+except Exception:
     pass
 
 

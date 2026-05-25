@@ -25,7 +25,6 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 WEEWX_CONF_DEST="/etc/weewx/weewx.conf"
 SCAN_DURATION=90
@@ -344,7 +343,8 @@ apply_to_conf() {
         return
     fi
 
-    local BACKUP="${CONF_PATH}.bak.$(date +%Y%m%d_%H%M%S)"
+    local BACKUP
+    BACKUP="${CONF_PATH}.bak.$(date +%Y%m%d_%H%M%S)"
 
     python3 - "$CONF_PATH" "$BACKUP" <<'PYEOF'
 import sys, re, os, shutil

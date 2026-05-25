@@ -146,13 +146,8 @@ def fetch_latest_two():
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
 
-        sql = f"""
-        SELECT {", ".join(DATA_POINTS)}
-        FROM archive
-        ORDER BY dateTime DESC
-        LIMIT 2
-        """  # nosec B608 — DATA_POINTS is a hardcoded internal list, not user input
-
+        cols = ", ".join(DATA_POINTS)
+        sql = "SELECT " + cols + " FROM archive ORDER BY dateTime DESC LIMIT 2"  # nosec B608
         cur.execute(sql)
 
         rows = cur.fetchall()

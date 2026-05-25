@@ -1,7 +1,10 @@
 #!/usr/bin/python3
+import shutil
 import subprocess
 
-rnstatus = subprocess.getoutput("rnstatus")
+_rnstatus = shutil.which("rnstatus") or "rnstatus"
+result = subprocess.run([_rnstatus], capture_output=True, text=True)
+rnstatus = result.stdout
 
 print(rnstatus)
 

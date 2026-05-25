@@ -20,7 +20,7 @@ def get_station_name():
         if m:
             return m.group(1).strip()
     except Exception:
-        pass
+        pass  # nosec B110
     return "Weather Station"
 
 STATION_NAME = get_station_name()
@@ -86,12 +86,10 @@ def fetch_latest_two():
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
-    cur.execute(f"""
-        SELECT {", ".join(DATA_POINTS)}
-        FROM archive
-        ORDER BY dateTime DESC
-        LIMIT 2
-    """)
+    cols = ", ".join(DATA_POINTS)
+    cur.execute(
+        "SELECT " + cols + " FROM archive ORDER BY dateTime DESC LIMIT 2"  # nosec B608
+    )
 
     rows = cur.fetchall()
     conn.close()
@@ -110,11 +108,10 @@ def get_daily_min_max(field):
     start = datetime(now.year, now.month, now.day)
     start_ts = int(start.timestamp())
 
-    cur.execute(f"""
-        SELECT MIN({field}), MAX({field})
-        FROM archive
-        WHERE dateTime >= ?
-    """, (start_ts,))
+    cur.execute(
+        "SELECT MIN(" + field + "), MAX(" + field + ") FROM archive WHERE dateTime >= ?",  # nosec B608
+        (start_ts,),
+    )
 
     row = cur.fetchone()
     conn.close()
@@ -144,7 +141,7 @@ try:
         if 0 < ld < LIGHTNING_ALERT_DISTANCE:
             lightning_nearby = True
 except Exception:
-    pass
+    pass  # nosec B110
 
 
 # =====================================================
@@ -266,7 +263,7 @@ for section_name, fields in SECTIONS:
                     value_str = fmt(value, fmtstr, unit)
 
             except Exception:
-                continue
+                continue  # nosec B112
         elif field == "windchill":
             try:
                 temp = data["outTemp"]
@@ -295,7 +292,7 @@ for section_name, fields in SECTIONS:
             try:
                 arrow = trend(float(value), float(prev[field]))
             except Exception:
-                pass
+                pass  # nosec B110
 
         day_min, day_max = get_daily_min_max(field)
 

@@ -151,7 +151,7 @@ def fetch_latest_two():
         FROM archive
         ORDER BY dateTime DESC
         LIMIT 2
-        """
+        """  # nosec B608 — DATA_POINTS is a hardcoded internal list, not user input
 
         cur.execute(sql)
 

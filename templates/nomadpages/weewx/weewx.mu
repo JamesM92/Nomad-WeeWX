@@ -19,7 +19,7 @@ def get_station_name():
         m = re.search(r'^\s*location\s*=\s*(.+)$', content, re.MULTILINE)
         if m:
             return m.group(1).strip()
-    except:
+    except Exception:
         pass
     return "Weather Station"
 
@@ -54,7 +54,7 @@ def fmt(val, fmtstr, unit=""):
         return "NA"
     try:
         return f"{fmtstr.format(val)}{unit}"
-    except:
+    except Exception:
         return "NA"
 
 
@@ -265,7 +265,7 @@ for section_name, fields in SECTIONS:
                 else:
                     value_str = fmt(value, fmtstr, unit)
 
-            except:
+            except Exception:
                 continue
         elif field == "windchill":
             try:
@@ -275,7 +275,7 @@ for section_name, fields in SECTIONS:
                     value_str = "N/A"
                 else:
                     value_str = fmt(value, fmtstr, unit)
-            except:
+            except Exception:
                 value_str = fmt(value, fmtstr, unit)
         elif field == "heatindex":
             try:
@@ -285,7 +285,7 @@ for section_name, fields in SECTIONS:
                     value_str = "N/A"
                 else:
                     value_str = fmt(value, fmtstr, unit)
-            except:
+            except Exception:
                 value_str = fmt(value, fmtstr, unit)
         else:
             value_str = fmt(value, fmtstr, unit)
@@ -294,7 +294,7 @@ for section_name, fields in SECTIONS:
         if prev:
             try:
                 arrow = trend(float(value), float(prev[field]))
-            except:
+            except Exception:
                 pass
 
         day_min, day_max = get_daily_min_max(field)
@@ -309,7 +309,7 @@ for section_name, fields in SECTIONS:
         ws = data["windSpeed"]
         try:
             dir_str = "N/A" if ws is None or float(ws) == 0 else wind_dir(data["windDir"])
-        except:
+        except Exception:
             dir_str = wind_dir(data["windDir"])
         print(render_line("Wind Dir", dir_str))
 
